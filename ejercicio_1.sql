@@ -18,26 +18,25 @@ CREATE TABLE personal (
 	email varchar(60) NULL
 	);
 
--- 2.- Crear una tabla llamada prestamo con los campos no_prestamo, clave_personal, fecha, monto, tipo
+-- 2 y 3.- Crear una tabla llamada prestamo con los campos no_prestamo, clave_personal, fecha, monto, tipo
+-- Prestamo debe tener un CONSTRAINT de FOREIGN KEY en DELETE para clave_personal
+
 CREATE TABLE prestamo (
-	no_prestamo varchar(10) PRIMARY KEY,
-	clave_personal FOREIGN KEY,
+	no_prestamo varchar(8) PRIMARY KEY,
+	clave_personal varchar(14) not null,
 	fecha date NOT NULL,
 	monto float NOT NULL,
-	tipo varchar(2) NOT NULL,	
-	CONSTRAINT clave_personal
-		FOREING KEY (clave_personal)
-		ON DELETE CASCADE
-		REFERENCES personal(clave_personal)
+	tipo varchar(2) NOT NULL,
+	CONSTRAINT fk_clave_personal
+    	FOREIGN KEY (clave_personal)
+    	REFERENCES personal (clave_personal)
+    	ON DELETE CASCADE	
 	);
--- 3.- Prestamo debe tener un CONSTRAINT de FOREIGN KEY en DELETE para clave_personal
-
-
 
 -- 4.- Agregar un índice único en el campo RFC de personal usando ALTER
 
-CREATE UNIQUE INDEX rfc
-ON personal (rfc);
+ALTER TABLE personal
+ADD CONSTRAINT unique_index UNIQUE (rfc)
 
 -- 5.- Agregar un campo periodo en la tabla prestamo usando ALTER
 
@@ -46,63 +45,30 @@ ADD periodo varchar(17);
 
 -- 6.- Cambiar el tipo de dato del campo monto a decimal(10,2) usando ALTER
 
-ALTER TABLE prestamo
-MODIFY COLUMN monto float(10,2);
+ALTER TABLE prestamo 
+MODIFY monto NUMBER(10,2);
 
 -- 7.- Eliminar el campo email de la tabla personal
 
 ALTER TABLE personal
-DROP column email
+DROP column email;
 
--- 8.- Insertar 3 registros en la tabla personal y 2 registros por cada persona en prestamo
+-- 8.- Insertar 3 registros en la tabla personal y 2 registros por cada persona en prestamo (los datos que estoy agregando son arbitrarios y no tienen una lógica)
 
-INSERT INTO personal (
-	clave personal,
-	nombre,
-	paterno,
-	materno,
-	rfc,
-	fechanacimiento,
-	email
-)
-VALUES
-    (
-        '2019 Summer Promotion',
-        0.15,
-        '20190601',
-        '20190901'
-    ),
-    (
-        '2019 Fall Promotion',
-        0.20,
-        '20191001',
-        '20191101'
-    ),
-    (
-        '2019 Winter Promotion',
-        0.25,
-        '20191201',
-        '20200101'
-    );
-INSERT INTO personal (clave_personal, nombre, paterno, materno, rfc, fechanacimiento, email)
-VALUES ('01781EAGO860712', 'OSCAR ENRIQUE', 'ESTRADA', 'GARCIA', 'EAGO860712XX1','12/07/86','oenriqueg@gmail.com')
+INSERT ALL
+    INTO personal (clave_personal,nombre,paterno,materno,rfc,fechanacimiento) VALUES ('0781EAGO860712','OSCAR ENRIQUE','ESTRADA','GARCIA','EAGO860712XX1','12/07/1986')
+    INTO personal (clave_personal,nombre,paterno,materno,rfc,fechanacimiento) VALUES ('0781EAGO860713','JUAN PABLO','ACOSTA','GARCIA','EAGO860712XX2','12/07/1950')
+    INTO personal (clave_personal,nombre,paterno,materno,rfc,fechanacimiento) VALUES ('0781EAGO860714','FRANCISCO JOSE','PAOLI','BOLIO','EAGO860712XX5','12/07/1994')
+SELECT * FROM DUAL;
+-- Honestamente no entendí exactamente lo que hacía la última sentencia, estuve más de 1 hora tratando de hacerlo diferente y encontré esta forma para hacerlo en un solo insert.
 
-INSERT INTO personal (clave_personal, nombre, paterno, materno, rfc, fechanacimiento, email)
-VALUES ('01781EAGO860712', 'OSCAR ENRIQUE', 'ESTRADA', 'GARCIA', 'EAGO860712XX1','12/07/86','oenriqueg@gmail.com')
-
-INSERT INTO personal (clave_personal, nombre, paterno, materno, rfc, fechanacimiento, email)
-VALUES ('01781EAGO860712', 'OSCAR ENRIQUE', 'ESTRADA', 'GARCIA', 'EAGO860712XX1','12/07/86','oenriqueg@gmail.com')
-
-INSERT INTO prestamo (clave_personal, nombre, paterno, materno, rfc, fechanacimiento, email)
-VALUES ('01781EAGO860712', 'OSCAR ENRIQUE', 'ESTRADA', 'GARCIA', 'EAGO860712XX1','12/07/86','oenriqueg@gmail.com')
-
-INSERT INTO prestamo (clave_personal, nombre, paterno, materno, rfc, fechanacimiento, email)
-VALUES ('01781EAGO860712', 'OSCAR ENRIQUE', 'ESTRADA', 'GARCIA', 'EAGO860712XX1','12/07/86','oenriqueg@gmail.com')
 
 -- 9.- Eliminar 1 registro de personal y validar el CONSTRAINT de DELETE
 
-DELETE FROM personal WHERE clave_personal ='01781EAGO860712';
+DELETE FROM personal WHERE clave_personal ='0781EAGO860712';
 
 -- 10.- Eliminar la tabla prestamo
 
 DROP TABLE prestamo;
+
+-- Estuvo muy entretenido el ejercicio, muchas gracias!
